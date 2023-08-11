@@ -1,6 +1,7 @@
 import math
 import random
 import matplotlib.pyplot as plt
+import numpy as np
 
 ##########################################################################
 ## Initialisation
@@ -78,19 +79,19 @@ def perlin_noise_1D_multi_octave(x, decoupe, nb_octave):
 	return x_noised/nb_octave
 
 def perlin_noise_2D_multi_octave(x,y, nb_octave):
-	decoupe = 75
+	decoupe = 16
 
 	x_noised = perlin_noise_1D_multi_octave(x, decoupe, nb_octave)
-	y_noised = perlin_noise_1D_multi_octave(y, decoupe, nb_octave)
+	y_noised = perlin_noise_1D_multi_octave(y+(4213*decoupe), decoupe, nb_octave)
 
 	height = (x_noised + y_noised)/2
 	return height
 def perlin_noise_3D_multi_octave(x,y,z, nb_octave):
-	decoupe = 75
+	decoupe = 16
 
 	x_noised = perlin_noise_1D_multi_octave(x, decoupe, nb_octave)
-	y_noised = perlin_noise_1D_multi_octave(y, decoupe, nb_octave)
-	z_noised = perlin_noise_1D_multi_octave(z, decoupe, nb_octave)
+	y_noised = perlin_noise_1D_multi_octave(y+(65138*decoupe), decoupe, nb_octave)
+	z_noised = perlin_noise_1D_multi_octave(y+(83165*decoupe), decoupe, nb_octave)
 
 	density = (x_noised + y_noised + z_noised)/3
 	return density
@@ -102,17 +103,25 @@ def perlin_noise_3D_multi_octave(x,y,z, nb_octave):
 ##########################################################################
 ## Main
 
-x = []
-for i in range(-100,100):
-	x.append(i)
+x = np.linspace(-32, 32, num=64)
+y = np.linspace(-32, 32, num=64)
+X, Y = np.meshgrid(x, y)
 
-y = []
+z = []
 for i in x:
-	y.append(perlin_noise_2D_multi_octave(i,0,1))
+	z_temp = []
+	for j in y:
+		z_temp.append(perlin_noise_2D_multi_octave(i,j,3))
+	z.append(z_temp)
+Z = np.asarray(z)
 
 
-fig, ax = plt.subplots()
-ax.plot(x,y)
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+
+ax.plot_surface(X, Y, Z, cmap='viridis',edgecolor='green')
+ax.set_title('3d')
+
 plt.show()
 
 
